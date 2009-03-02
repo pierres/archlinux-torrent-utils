@@ -14,4 +14,4 @@ add_executable(lstorrent lstorrent.cpp)
 target_link_libraries(lstorrent ${BTCORE_LIBRARIES})
 install(TARGETS lstorrent DESTINATION bin)
 
-#install(PROGRAMS mktorrent-archiso DESTINATION bin)
+install(PROGRAMS mktorrent-archiso DESTINATION bin)

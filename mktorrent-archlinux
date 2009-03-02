@@ -1,0 +1,19 @@
+#!/bin/bash
+
+archver='2009.02'
+
+webseeds=''
+
+for s in $(cat ./webseeds); do
+	webseeds="${webseeds} -w ${s}/iso/${archver}/"
+done
+
+for i in ./archlinux-${archver}*.{iso,img}; do
+	echo "processing ${i}"
+	mktorrent-ktorrent \
+		-f "${i}" \
+		-t 'http://tracker.archlinux.de:6969/announce' \
+		-c "Arch Linux ${archver} (www.archlinux.org)" \
+		${webseeds}
+	lstorrent -h -f "${i}" >> whitelist-${archver}.txt 
+done
