@@ -1,19 +1,40 @@
 #!/bin/bash
 
-archver='2009.02'
+if [ "${1}" = "" -o "${2}" = "" ]; then
+	echo "Usage: ${0} <version> <iso file>"
+	echo -e "\tversion:\te.g. 2009.05 or archboot/2009.05"
+	echo -e "\tiso file:\te.g. ./archlinux-2009.05-core-x86_64.iso"
+	exit 1
+fi
+
+archver="${1}"
+isofile="${2}"
+
+
+mirrorlist=$(mktemp /tmp/mirrorlist.XXXXXX)
+
+echo 'Loading mirrorlist...'
+svn export -q \
+	svn://archlinux.org/srv/svn-packages/pacman-mirrorlist/trunk/mirrorlist \
+	$mirrorlist
+
+echo 'Creating webseeds...'
+httpmirrorlist=$(grep 'http://' $mirrorlist \
+	| awk '{print $3;}' \
+	| sed -e 's#/$repo/os/@carch@##')
+
+rm -f $mirrorlist
 
 webseeds=''
 
-for s in $(cat ./webseeds); do
+for s in $httpmirrorlist; do
 	webseeds="${webseeds} -w ${s}/iso/${archver}/"
 done
 
-for i in ./archlinux-${archver}*.{iso,img}; do
-	echo "processing ${i}"
-	mktorrent-ktorrent \
-		-f "${i}" \
-		-t 'http://tracker.archlinux.de:6969/announce' \
-		-c "Arch Linux ${archver} (www.archlinux.org)" \
-		${webseeds}
-	lstorrent -h -f "${i}" >> whitelist-${archver}.txt 
-done
+
+echo 'Building torrent...'
+mktorrent \
+	-f "${isofile}" \
+	-t 'http://tracker.archlinux.de:6969/announce' \
+	-c "Arch Linux ${archver} (www.archlinux.org)" \
+	${webseeds}
