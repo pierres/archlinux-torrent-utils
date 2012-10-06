@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# install mktorrent from http://mktorrent.sourceforge.net/
+# install mktorrent
 # check result on e.g. http://torrenteditor.com/
 
 if [ "${1}" = "" -o "${2}" = "" ]; then
 	echo "Usage: ${0} <version> <iso file>"
-	echo -e "\tversion:\te.g. 2009.05 or archboot/2009.05"
-	echo -e "\tiso file:\te.g. ./archlinux-2009.05-core-x86_64.iso"
+	echo -e "\tversion:\te.g. 2012.10.06 or archboot/2012.10.06"
+	echo -e "\tiso file:\te.g. ./archlinux-2012.10.06-core-x86_64.iso"
 	exit 1
 fi
 
@@ -14,17 +14,16 @@ archver="${1}"
 isofile="${2}"
 
 echo 'Creating webseeds...'
-httpmirrorlist=$(wget http://www.archlinux.org/mirrorlist/i686/all/ -q -O - \
-	| grep 'http://' \
+httpmirrorlist=$(curl https://www.archlinux.org/mirrorlist/all/http/ \
+	| grep '#Server = http' \
 	| awk "{print \$3\"/iso/${archver}/\";}" \
-	| sed -e 's#/$repo/os/i686##' \
-	      -e 's#\s*# -w#')
+	| sed -e 's#/$repo/os/$arch##' \
+	      -e 's#\s*# -w #')
 
 echo 'Building torrent...'
 mktorrent \
 	-l 19 \
-	-a 'http://tracker.archlinux.de:6969/announce' \
-	-a 'http://tracker.openbittorrent.com:80/announce' \
+	-a 'http://tracker.archlinux.org:6969/announce' \
 	-c "Arch Linux ${archver} (www.archlinux.org)" \
 	${httpmirrorlist} \
 	"${isofile}"
