@@ -23,7 +23,6 @@ httpmirrorlist=$(curl https://www.archlinux.org/mirrorlist/all/http/ \
 echo 'Building torrent...'
 mktorrent \
 	-l 19 \
-	-a 'http://tracker.archlinux.org:6969/announce' \
 	-c "Arch Linux ${archver} (www.archlinux.org)" \
 	${httpmirrorlist} \
 	"${isofile}"
