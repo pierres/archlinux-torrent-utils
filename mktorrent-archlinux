@@ -14,7 +14,7 @@ archver="${1}"
 isofile="${2}"
 
 echo 'Creating webseeds...'
-httpmirrorlist=$(curl https://www.archlinux.org/mirrorlist/all/http/ \
+httpmirrorlist=$(curl "https://archlinux.org/mirrorlist/?country=all&protocol=http&protocol=https" \
 	| grep '#Server = http' \
 	| awk "{print \$3\"/iso/${archver}/\";}" \
 	| sed -e 's#/$repo/os/$arch##' \
